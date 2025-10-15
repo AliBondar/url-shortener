@@ -2,10 +2,12 @@ package com.bondar.urlshortener.service;
 
 import com.bondar.urlshortener.entity.ShortUrl;
 import com.bondar.urlshortener.repository.UrlRepository;
+import com.bondar.urlshortener.validation.InputValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Random;
@@ -15,12 +17,16 @@ import java.util.Random;
 public class UrlService {
 
     private final UrlRepository urlRepository;
+    private final InputValidation inputValidation;
 
     private static final String BASE62 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private static final int CODE_LENGTH = 6;
 
     @Transactional
     public ShortUrl shortenUrl(String originalUrl) {
+        //validation
+        inputValidation.validateUrl(originalUrl);
+
         // check if already exists and still active
         Optional<ShortUrl> existing = urlRepository.findByOriginalUrl(originalUrl);
         if (existing.isPresent() && existing.get().isActive()) {
@@ -65,7 +71,7 @@ public class UrlService {
      * Utility to generate random 6-character Base62 code.
      */
     private String generateShortCode() {
-        Random random = new Random();
+        SecureRandom random = new SecureRandom();
         StringBuilder sb = new StringBuilder(CODE_LENGTH);
         for (int i = 0; i < CODE_LENGTH; i++) {
             int idx = random.nextInt(BASE62.length());
