@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Slf4j
 @Service
@@ -17,8 +17,8 @@ public class UrlCleanupScheduler {
 
     @Scheduled(cron = "0 0 */6 * * *")
     public void cleanupExpiredUrls() {
-        Instant now = Instant.now();
-        int deleted = urlRepository.deleteByExpiryDateBefore(now);
+        LocalDateTime now = LocalDateTime.now();
+        int deleted = urlRepository.deleteByExpiryAtBefore(now);
         if (deleted > 0) {
             log.info("Deleted {} expired URLs at {}", deleted, now);
         }
