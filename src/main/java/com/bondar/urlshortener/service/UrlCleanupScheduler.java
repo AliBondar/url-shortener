@@ -20,7 +20,7 @@ public class UrlCleanupScheduler {
         Instant now = Instant.now();
         int deleted = urlRepository.deleteByExpiryDateBefore(now);
         if (deleted > 0) {
-            log.info("🧹 Deleted {} expired URLs at {}", deleted, now);
+            log.info("Deleted {} expired URLs at {}", deleted, now);
         }
     }
 }
